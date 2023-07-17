@@ -1,0 +1,66 @@
+pull_request_rules:
+  - name: assign PR
+    conditions:
+      - -draft
+    actions:
+      assign:
+        add_users:
+          - "{{author}}"
+
+  - name: request review
+    conditions:
+      - -draft
+    actions:
+      request_reviews:
+        users_from_teams:
+          - '@omrqs/devops-reviewers'
+
+  - name: return to draft
+    conditions:
+      - or:
+          - conflict
+          - "#check-failure>0"
+    actions:
+      edit:
+        draft: true
+
+  - name: ask to resolve conflict
+    conditions:
+      - conflict
+    actions:
+      comment:
+        message: "@{{author}}, this PR is in conflict."
+
+  - name: ask to solve failure
+    conditions:
+      - "#check-failure>0"
+    actions:
+      comment:
+        message: "@{{author}}, some checks failed."
+
+  - name: merge PR
+    conditions:
+      - base~=(develop|main)
+      - -conflict
+      - "#approved-reviews-by>=1"
+      - "#changes-requested-reviews-by=0"
+      - -label~=delayed
+    actions:
+      queue:
+        method: merge
+        name: default
+
+  - name: merge dependabot PR
+    conditions:
+      - base~=(develop|main)
+      - author=dependabot
+      - -conflict
+    actions:
+      queue:
+        method: merge
+        name: default
+
+queue_rules:
+  - name: default
+    conditions:
+      - -conflict
