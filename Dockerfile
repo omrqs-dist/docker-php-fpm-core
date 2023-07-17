@@ -1,7 +1,7 @@
 FROM php:8.2-fpm-alpine
 
 LABEL maintainer="omrqs <tech@omrqs.io>"
-LABEL description="Image with PHP-FPM from Alpine with opcache, intl, git, libzip-dev, zip, pcntl, redis, curl, openssl, libcurl, apcu deps."
+LABEL description="Image with PHP-FPM from Alpine with opcache, intl, git, libzip-dev, zip, pcntl, redis, curl, openssl, libcurl, apcu and amqp deps."
 
 RUN apk add --virtual --update --no-cache $PHPIZE_DEPS \
     linux-headers \
@@ -13,9 +13,17 @@ RUN apk add --virtual --update --no-cache $PHPIZE_DEPS \
     icu-dev \
     curl \
     openssl \
+    rabbitmq-c-dev \
     && rm -rf /var/cache/apk/* /var/lib/apk/* or /etc/apk/cache/*
 
-RUN docker-php-ext-install zip pcntl opcache intl
+# >>>> Custom install amqp from source
+ENV EXT_AMQP_VERSION=master
+RUN docker-php-source extract \
+    && git clone --depth 1 --branch $EXT_AMQP_VERSION https://github.com/php-amqp/php-amqp.git /usr/src/php/ext/amqp \
+    && cd /usr/src/php/ext/amqp && git submodule update --init
+# <<<< end
+
+RUN docker-php-ext-install zip pcntl opcache intl amqp
 RUN pecl install redis xdebug apcu
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" && \
