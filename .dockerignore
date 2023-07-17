@@ -1,2 +1,10 @@
+node_modules
+Dockerfile*
 .DS_Store
+.git
+.github
+.gitignore
+.vscode
+.idea
+dist/**
 README.md
