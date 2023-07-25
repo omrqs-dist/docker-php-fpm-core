@@ -6,12 +6,12 @@ LABEL description="Image with PHP-FPM from Alpine with opcache, intl, git, libzi
 RUN apk add --virtual --update --no-cache $PHPIZE_DEPS \
     linux-headers \
     libzip-dev \
+    zip \
     libcurl \
+    curl \
     libintl \
     git \
-    zip \
     icu-dev \
-    curl \
     openssl \
     rabbitmq-c-dev \
     && rm -rf /var/cache/apk/* /var/lib/apk/* or /etc/apk/cache/*
