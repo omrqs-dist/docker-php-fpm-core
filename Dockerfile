@@ -9,10 +9,12 @@ RUN apk add --virtual --update --no-cache $PHPIZE_DEPS \
     zip \
     libcurl \
     curl \
+    curl-dev \
     libintl \
     git \
     icu-dev \
     openssl \
+    openssl-dev \
     rabbitmq-c-dev \
     && rm -rf /var/cache/apk/* /var/lib/apk/* or /etc/apk/cache/*
 
