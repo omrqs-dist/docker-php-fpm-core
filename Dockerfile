@@ -19,13 +19,13 @@ RUN apk add --virtual --update --no-cache $PHPIZE_DEPS \
     && rm -rf /var/cache/apk/* /var/lib/apk/* or /etc/apk/cache/*
 
 # >>>> Custom install amqp from source
-ENV EXT_AMQP_VERSION=master
+ENV EXT_AMQP_VERSION=latest
 RUN docker-php-source extract \
     && git clone --depth 1 --branch $EXT_AMQP_VERSION https://github.com/php-amqp/php-amqp.git /usr/src/php/ext/amqp \
     && cd /usr/src/php/ext/amqp && git submodule update --init
 # <<<< end
 
-RUN docker-php-ext-install zip pcntl opcache intl amqp
+RUN docker-php-ext-install zip pcntl opcache intl amqp bcmath
 RUN pecl install redis xdebug apcu
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" && \
